@@ -9,8 +9,10 @@
 
 BOT_NAME = "scrape_books"
 
+
 SPIDER_MODULES = ["scrape_books.spiders"]
 NEWSPIDER_MODULE = "scrape_books.spiders"
+
 
 FEED_FORMAT = "jsonlines"
 FEED_URI = "books.jl"
