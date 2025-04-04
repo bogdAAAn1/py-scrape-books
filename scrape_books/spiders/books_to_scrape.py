@@ -1,6 +1,8 @@
 import scrapy
 from scrapy.http import Response
 
+from scrape_books.items import ScrapeBooksItem
+
 
 class BooksToScrapeSpider(scrapy.Spider):
     name = "books_to_scrape"
@@ -27,21 +29,21 @@ class BooksToScrapeSpider(scrapy.Spider):
             yield response.follow(next_page, callback=self.parse)
 
     def parse_book(self, response: Response) -> dict:
-        yield {
-            "title": response.css("h1::text").get(),
-            "price": float(
-                response.css("p.price_color::text").get().strip("£")
-            ),
-            "amount_in_stock": int(
-                response.css(
-                    "p.instock.availability"
-                ).get().split()[-3].strip("(")
-            ),
-            "rating": self.rating.get(
-                response.css(
-                    "p.star-rating::attr(class)"
-                ).get().split()[-1]),
-            "category": response.css("li a::text").getall()[2],
-            "description": response.css("div.sub-header + p::text").get(),
-            "upc": response.css("td::text").getall()[0]
-        }
+        item = ScrapeBooksItem()
+        item['title'] = response.css("h1::text").get()
+        item['price'] = float(
+            response.css("p.price_color::text").get().strip("£")
+        )
+        item['amount_in_stock'] = int(
+            response.css(
+                "p.instock.availability"
+            ).get().split()[-3].strip("(")
+        )
+        item['rating'] = self.rating.get(
+            response.css(
+                "p.star-rating::attr(class)"
+            ).get().split()[-1])
+        item['category'] = response.css("li a::text").getall()[2]
+        item['description'] = response.css("div.sub-header + p::text").get()
+        item['upc'] = response.css("td::text").getall()[0]
+        yield item
